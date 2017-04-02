@@ -1,0 +1,219 @@
+swagger: '2.0'
+info:
+  version: '1.0.0'
+  title: kuiper-media
+  description: Distributed media database
+  license:
+    name: MIT
+    url: http://opensource.org/licenses/MIT
+
+
+# host: kuiper.local
+basePath: /api
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+
+
+paths:
+  /media:
+    get:
+      description: Return or search through all media entries in the system, in a paginated fashion.
+      operationId: findMedia
+      produces:
+        - application/json
+      parameters:
+        - name: search
+          in: query
+          description: string to search through all media entries for
+          required: false
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: array of relevant media entries
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/entry'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/error'
+
+    post:
+      description: Creates a new media entry in the db
+      operationId: addEntry
+      produces:
+        - application/json
+      parameters:
+        - name: entry
+          in: body
+          description: Entry to add to the database
+          required: true
+          schema:
+            $ref: '#/definitions/entry'
+      responses:
+        '200':
+          description: successfully added
+          schema:
+            $ref: '#/definitions/entry'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/error'
+
+  '/media/{_id}':
+    get:
+      description: get individual media item entry. will only return the latest version of this media id entry
+      operationId: getEntry
+      produces:
+        - application/json
+      parameters:
+        - name: _id
+          in: path
+          description: ID to lookup
+          required: true
+          type: string
+      responses:
+        '200':
+          description: returns the object in question
+          schema:
+            $ref: '#/definitions/entry'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/error'
+
+
+  '/media/{_id}/links':
+    put:
+      description: adds links to an existing media entry
+      operationId: updateEntryLinks
+      produces:
+        - application/json
+      parameters:
+        - name: _id
+          in: path
+          description: Id to add links to
+          required: true
+          type: string
+        - name: link
+          in: body
+          description: new link to add
+          schema:
+            $ref: '#/definitions/link'
+      responses:
+        '200':
+          description: returns the updated media entry
+          schema:
+            $ref: '#/definitions/entry'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/error'
+
+  '/media/{_id}/reviews':
+    put:
+      description: adds reviews to existing media entry
+      operationId: updateEntryReviews
+      produces:
+        - application/json
+      parameters:
+        - name: _id
+          in: path
+          description: ID to update
+          required: true
+          type: string
+        - name: review
+          in: body
+          description: new review to add
+          schema:
+            $ref: '#/definitions/review'
+      responses:
+        '200':
+          description: returns the object in question
+          schema:
+            $ref: '#/definitions/entry'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/error'
+
+
+
+definitions:
+  error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+
+  entry:
+    type: object
+    required:
+      - _id
+    properties:
+      _id:
+        type: string
+      title:
+        type: string
+      links:
+        type: array
+        items:
+          $ref: '#/definitions/link'
+      reviews:
+        type: array
+        items:
+          $ref: '#/definitions/review'
+      metadata:
+        type: array
+        items:
+          $ref: '#/definitions/meta'
+
+  meta:
+    type: object
+    properties:
+      key:
+        type: string
+      value:
+        type: string
+
+
+  link:
+    type: object
+    required:
+      - type
+      - url
+    properties:
+      type:
+        type: string
+      url:
+        type: string
+      format:
+        type: string
+      description:
+        type: string
+
+
+  review:
+    type: object
+    required:
+      - who
+      - when
+    properties:
+      who:
+        type: string
+      when:
+        type: string
+      rating:
+        type: string
+      comment:
+        type: string
