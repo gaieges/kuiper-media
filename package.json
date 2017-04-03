@@ -4,7 +4,9 @@
   "description": "decentralized media db",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "node_modules/.bin/nodemon --watch . index.js"
   },
   "repository": {
     "type": "git",
@@ -17,12 +19,16 @@
   },
   "homepage": "https://github.com/gaieges/kuiper-media#readme",
   "dependencies": {
-    "ipfs": "^0.23.1",
+    "compression": "^1.6.2",
+    "errorhandler": "^1.5.0",
+    "express": "^3.2.0",
     "ipfs-daemon": "^0.3.1",
+    "js-yaml": "^3.3.0",
     "orbit-db": "^0.17.3",
     "orbit-db-docstore": "^0.2.0",
-    "connect": "^3.2.0",
-    "js-yaml": "^3.3.0",
     "swagger-tools": "0.10.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.11.0"
   }
 }

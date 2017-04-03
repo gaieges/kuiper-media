@@ -31,7 +31,7 @@ At the top level, we have a piece of media, anything you can imagine, that has i
         "format": "trailer",
         "description": "series trailer"
     }],
-    "perception": [{
+    "reviews": [{
         "who": "userid",
         "when": "Fri Mar 31 18:06:29 CDT 2017",
         "score": "up",
@@ -46,6 +46,36 @@ This would need to happen through an interface of some sort, and have a level of
 
 All of this would be stored in generally available database on top of a distributed store like IPFS.  See the links below for ideas on how to do that.
 
+# Getting started
+
+### Local development
+
+To get started right away, simply run:
+
+```bash
+npm install
+npm start
+
+## OR
+
+# to restart node process when files change
+npm run dev
+```
+
+### Docker
+
+In its current form, you can spin up a local instance of the API in docker like:
+
+```bash
+docker build -t kuiper .
+docker run -it -p 8080:8080 -p 4001:4001 kuiper
+```
+
+# Using
+
+Take a look at the swagger api doc that is output from this at:
+
+[http://localhost:8080/docs](http://localhost:8080/docs)
 
 # References
 

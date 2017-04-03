@@ -1,114 +1,58 @@
 'use strict';
 
-exports.addEntry = function(args, res, next) {
+exports.addEntry = function(req, res, next) {
   /**
    * Creates a new media entry in the db
    *
    * entry Entry Entry to add to the database
    * returns entry
    **/
-  var examples = {};
-  examples['application/json'] = {
-  "metadata" : [ {
-    "value" : "aeiou",
-    "key" : "aeiou"
-  } ],
-  "reviews" : [ {
-    "rating" : "aeiou",
-    "comment" : "aeiou",
-    "when" : "aeiou",
-    "who" : "aeiou"
-  } ],
-  "links" : [ {
-    "format" : "aeiou",
-    "description" : "aeiou",
-    "type" : "aeiou",
-    "url" : "aeiou"
-  } ],
-  "_id" : "aeiou",
-  "title" : "aeiou"
-};
-  if (Object.keys(examples).length > 0) {
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(examples[Object.keys(examples)[0]] || {}, null, 2));
-  } else {
-    res.end();
-  }
+
+   req.orbitdb.put( req.body ).then((hash) => {
+     res.json(hash);
+   })
+   .catch((err) => {
+     console.log("caught error")
+     next(err);
+   });
 }
 
-exports.findMedia = function(args, res, next) {
+
+
+
+
+
+exports.findMedia = function(req, res, next) {
   /**
    * Return or search through all media entries in the system, in a paginated fashion.
    *
    * search List string to search through all media entries for (optional)
    * returns List
    **/
-  var examples = {};
-  examples['application/json'] = [ {
-  "metadata" : [ {
-    "value" : "aeiou",
-    "key" : "aeiou"
-  } ],
-  "reviews" : [ {
-    "rating" : "aeiou",
-    "comment" : "aeiou",
-    "when" : "aeiou",
-    "who" : "aeiou"
-  } ],
-  "links" : [ {
-    "format" : "aeiou",
-    "description" : "aeiou",
-    "type" : "aeiou",
-    "url" : "aeiou"
-  } ],
-  "_id" : "aeiou",
-  "title" : "aeiou"
-} ];
-  if (Object.keys(examples).length > 0) {
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(examples[Object.keys(examples)[0]] || {}, null, 2));
-  } else {
-    res.end();
-  }
+
 }
 
-exports.getEntry = function(args, res, next) {
+
+
+
+exports.getEntry = function(req, res, next) {
   /**
    * get individual media item entry. will only return the latest version of this media id entry
    *
    * _id String ID to lookup
    * returns entry
    **/
-  var examples = {};
-  examples['application/json'] = {
-  "metadata" : [ {
-    "value" : "aeiou",
-    "key" : "aeiou"
-  } ],
-  "reviews" : [ {
-    "rating" : "aeiou",
-    "comment" : "aeiou",
-    "when" : "aeiou",
-    "who" : "aeiou"
-  } ],
-  "links" : [ {
-    "format" : "aeiou",
-    "description" : "aeiou",
-    "type" : "aeiou",
-    "url" : "aeiou"
-  } ],
-  "_id" : "aeiou",
-  "title" : "aeiou"
-};
-  if (Object.keys(examples).length > 0) {
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(examples[Object.keys(examples)[0]] || {}, null, 2));
-  } else {
-    res.end();
-  }
+
+  const id = req.swagger.params._id.value;
+  console.log('Getting entry id: %s', id );
+
+  res.json( req.orbitdb.get(id) );
 }
 
-exports.updateEntryLinks = function(args, res, next) {
+
+
+
+exports.updateEntryLinks = function(req, res, next) {
   /**
    * adds links to an existing media entry
    *
@@ -116,36 +60,13 @@ exports.updateEntryLinks = function(args, res, next) {
    * link Link new link to add (optional)
    * returns entry
    **/
-  var examples = {};
-  examples['application/json'] = {
-  "metadata" : [ {
-    "value" : "aeiou",
-    "key" : "aeiou"
-  } ],
-  "reviews" : [ {
-    "rating" : "aeiou",
-    "comment" : "aeiou",
-    "when" : "aeiou",
-    "who" : "aeiou"
-  } ],
-  "links" : [ {
-    "format" : "aeiou",
-    "description" : "aeiou",
-    "type" : "aeiou",
-    "url" : "aeiou"
-  } ],
-  "_id" : "aeiou",
-  "title" : "aeiou"
-};
-  if (Object.keys(examples).length > 0) {
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(examples[Object.keys(examples)[0]] || {}, null, 2));
-  } else {
-    res.end();
-  }
+
 }
 
-exports.updateEntryReviews = function(args, res, next) {
+
+
+
+exports.updateEntryReviews = function(req, res, next) {
   /**
    * adds reviews to existing media entry
    *
@@ -153,32 +74,4 @@ exports.updateEntryReviews = function(args, res, next) {
    * review Review new review to add (optional)
    * returns entry
    **/
-  var examples = {};
-  examples['application/json'] = {
-  "metadata" : [ {
-    "value" : "aeiou",
-    "key" : "aeiou"
-  } ],
-  "reviews" : [ {
-    "rating" : "aeiou",
-    "comment" : "aeiou",
-    "when" : "aeiou",
-    "who" : "aeiou"
-  } ],
-  "links" : [ {
-    "format" : "aeiou",
-    "description" : "aeiou",
-    "type" : "aeiou",
-    "url" : "aeiou"
-  } ],
-  "_id" : "aeiou",
-  "title" : "aeiou"
-};
-  if (Object.keys(examples).length > 0) {
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(examples[Object.keys(examples)[0]] || {}, null, 2));
-  } else {
-    res.end();
-  }
 }
-

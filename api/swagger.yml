@@ -20,11 +20,10 @@ produces:
 
 paths:
   /media:
+    x-swagger-router-controller: Default
     get:
       description: Return or search through all media entries in the system, in a paginated fashion.
       operationId: findMedia
-      produces:
-        - application/json
       parameters:
         - name: search
           in: query
@@ -48,8 +47,6 @@ paths:
     post:
       description: Creates a new media entry in the db
       operationId: addEntry
-      produces:
-        - application/json
       parameters:
         - name: entry
           in: body
@@ -68,11 +65,10 @@ paths:
             $ref: '#/definitions/error'
 
   '/media/{_id}':
+    x-swagger-router-controller: Default
     get:
       description: get individual media item entry. will only return the latest version of this media id entry
       operationId: getEntry
-      produces:
-        - application/json
       parameters:
         - name: _id
           in: path
@@ -91,11 +87,10 @@ paths:
 
 
   '/media/{_id}/links':
+    x-swagger-router-controller: Default
     put:
       description: adds links to an existing media entry
       operationId: updateEntryLinks
-      produces:
-        - application/json
       parameters:
         - name: _id
           in: path
@@ -118,11 +113,10 @@ paths:
             $ref: '#/definitions/error'
 
   '/media/{_id}/reviews':
+    x-swagger-router-controller: Default
     put:
       description: adds reviews to existing media entry
       operationId: updateEntryReviews
-      produces:
-        - application/json
       parameters:
         - name: _id
           in: path
@@ -158,8 +152,6 @@ definitions:
 
   entry:
     type: object
-    required:
-      - _id
     properties:
       _id:
         type: string
