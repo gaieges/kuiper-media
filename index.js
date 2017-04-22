@@ -5,28 +5,29 @@ const app          = express();
 const swaggerTools = require('swagger-tools');
 const jsyaml       = require('js-yaml');
 const fs           = require('fs');
-const IPFS         = require('ipfs-daemon/src/ipfs-node-daemon')
+const IPFS         = require('ipfs')
 const OrbitDB      = require('orbit-db')
 const bodyParser   = require('body-parser')
 const compression  = require('compression');
 const errorHandler = require('errorhandler');
 const morgan       = require('morgan')
 
-const serverPort = 8080;
+const serverPort = 3000;
+const swaggerDoc = jsyaml.safeLoad(fs.readFileSync('./api/swagger.yml', 'utf8'));
 
 
 
 
 
-const ipfs = new IPFS();
-
-ipfs.on('error', (e) => {
-  throw new Error(e);
+const ipfs = new IPFS({
+  // repo: path
+  init: true,
+  start: true
 });
 
+const orbitdb = new OrbitDB( ipfs );
 
 ipfs.on('ready', (e) => {
-  const orbitdb = new OrbitDB( ipfs );
   const docstore = orbitdb.docstore( 'kuiper-media' );
 
   docstore.events.on('write',(dbname, hash, entry) => {
@@ -34,7 +35,10 @@ ipfs.on('ready', (e) => {
   })
 
   app.use(function(req, res, next) {
-    req.orbitdb = docstore;
+    req.orbitdb = orbitdb;
+    req.docstore = docstore
+    req.ipfs = ipfs;
+
     next();
   });
 
@@ -47,16 +51,12 @@ ipfs.on('ready', (e) => {
   // console logger
   app.use(morgan('tiny'));
 
+  // Error handler
+  app.use( (err, req, res, next) => {
+    console.error( err.stack );
+    res.status(500).json(err);
+  });
 
-
-  const swaggerOptions = {
-    swaggerUi: '/swagger.json',
-    controllers: './controllers',
-    useStubs: false
-  };
-
-  const spec = fs.readFileSync('./api/swagger.yml', 'utf8');
-  const swaggerDoc = jsyaml.safeLoad(spec);
 
 
   // Initialize the Swagger middleware
@@ -68,35 +68,43 @@ ipfs.on('ready', (e) => {
     app.use(middleware.swaggerValidator());
 
     // Route validated requests to appropriate controller
-    app.use(middleware.swaggerRouter(swaggerOptions));
+    app.use(middleware.swaggerRouter({
+      swaggerUi: '/swagger.json',
+      controllers: './controllers',
+      useStubs: false
+    }));
 
     // Serve the Swagger documents and Swagger UI
     app.use(middleware.swaggerUi());
 
-    // Error handler
-    app.use( (err, req, res, next) => {
-      console.error( err.stack );
-      res.status(500).json(err);
-    })
-
     // Start the server
     app.listen(serverPort, function () {
-      console.log('Your server is listening on port %d (http://localhost:%d)', serverPort, serverPort);
-      console.log('Swagger-ui is available on http://localhost:%d/docs', serverPort);
+      console.log('server is listening on port %d (http://localhost:%d)', serverPort, serverPort);
+      console.log('documentation is available on http://localhost:%d/docs', serverPort);
     });
   });
-})
+});
+
+
+ipfs.on('error', (e) => {
+  endProcess( Error(e) );
+});
 
 
 
 // Adds hooks for Docker CTRL-C and Stop
 function endProcess(reason) {
   // eslint-disable-next-line no-console
-  console.log(`Quitting... Reason: ${reason}`);
-  process.exit();
+  console.log("Quitting... Reason: %s", reason );
+
+  orbitdb.disconnect() 
+  ipfs.stop( () => {
+    process.exit()
+  });
 }
 
-['SIGINT', 'SIGTERM' ].forEach( (signal) => {
+
+['SIGINT', 'SIGTERM', 'SIGUSR2','SIGUSR1' ].forEach( (signal) => {
   process.on(signal, () => {
     endProcess(signal);
   });

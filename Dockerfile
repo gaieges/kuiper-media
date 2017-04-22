@@ -11,7 +11,7 @@ ENV NODE_PATH=/node_modules
 RUN npm install && mv /app/node_modules /
 
 EXPOSE 4001
-EXPOSE 8080
+EXPOSE 3000
 
 ENV IPFS_PATH /ipfs
 

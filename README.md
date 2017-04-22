@@ -68,14 +68,14 @@ In its current form, you can spin up a local instance of the API in docker like:
 
 ```bash
 docker build -t kuiper .
-docker run -it -p 8080:8080 -p 4001:4001 kuiper
+docker run -it -p 3000:3000 -p 4001:4001 kuiper
 ```
 
 # Using
 
 Take a look at the swagger api doc that is output from this at:
 
-[http://localhost:8080/docs](http://localhost:8080/docs)
+[http://localhost:3000/docs](http://localhost:3000/docs)
 
 # References
 

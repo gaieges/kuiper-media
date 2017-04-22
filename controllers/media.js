@@ -1,6 +1,10 @@
 'use strict';
 
-exports.addEntry = function(req, res, next) {
+var url = require('url');
+
+
+
+module.exports.addEntry = function addEntry (req, res, next) {
   /**
    * Creates a new media entry in the db
    *
@@ -8,34 +12,33 @@ exports.addEntry = function(req, res, next) {
    * returns entry
    **/
 
-   req.orbitdb.put( req.body ).then((hash) => {
+   req.docstore.put( req.body ).then((hash) => {
      res.json(hash);
    })
    .catch((err) => {
      console.log("caught error")
      next(err);
    });
-}
+};
 
 
 
-
-
-
-exports.findMedia = function(req, res, next) {
+module.exports.findMedia = function findMedia (req, res, next) {
   /**
    * Return or search through all media entries in the system, in a paginated fashion.
    *
    * search List string to search through all media entries for (optional)
    * returns List
    **/
+  
+  res.json(
+    req.docstore.query((e) => true)
+  );
+};
 
-}
 
 
-
-
-exports.getEntry = function(req, res, next) {
+module.exports.getEntry = function getEntry (req, res, next) {
   /**
    * get individual media item entry. will only return the latest version of this media id entry
    *
@@ -46,13 +49,12 @@ exports.getEntry = function(req, res, next) {
   const id = req.swagger.params._id.value;
   console.log('Getting entry id: %s', id );
 
-  res.json( req.orbitdb.get(id) );
-}
+  res.json( req.docstore.get(id) );
+};
 
 
 
-
-exports.updateEntryLinks = function(req, res, next) {
+module.exports.updateEntryLinks = function updateEntryLinks (req, res, next) {
   /**
    * adds links to an existing media entry
    *
@@ -61,12 +63,12 @@ exports.updateEntryLinks = function(req, res, next) {
    * returns entry
    **/
 
-}
+
+};
 
 
 
-
-exports.updateEntryReviews = function(req, res, next) {
+module.exports.updateEntryReviews = function updateEntryReviews (req, res, next) {
   /**
    * adds reviews to existing media entry
    *
@@ -74,4 +76,6 @@ exports.updateEntryReviews = function(req, res, next) {
    * review Review new review to add (optional)
    * returns entry
    **/
-}
+
+
+};

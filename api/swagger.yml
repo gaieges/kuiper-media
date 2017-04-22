@@ -19,11 +19,37 @@ produces:
 
 
 paths:
+  /ipfs:
+    x-swagger-router-controller: ipfs
+    get:
+      description: Gets info around ipfs daemon
+      operationId: getInfo
+      tags: [ipfs]
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              isOnline:
+                type: boolean
+              nodeId: 
+                type: object
+              peers:
+                type: array
+                items:
+                  type: string
+        '500':
+          description: internal error
+          schema:
+            $ref: '#/definitions/error'          
+
   /media:
-    x-swagger-router-controller: Default
+    x-swagger-router-controller: media
     get:
       description: Return or search through all media entries in the system, in a paginated fashion.
       operationId: findMedia
+      tags: [media]
       parameters:
         - name: search
           in: query
@@ -39,7 +65,7 @@ paths:
             type: array
             items:
               $ref: '#/definitions/entry'
-        default:
+        '500':
           description: unexpected error
           schema:
             $ref: '#/definitions/error'
@@ -47,6 +73,7 @@ paths:
     post:
       description: Creates a new media entry in the db
       operationId: addEntry
+      tags: [media]
       parameters:
         - name: entry
           in: body
@@ -59,16 +86,17 @@ paths:
           description: successfully added
           schema:
             $ref: '#/definitions/entry'
-        default:
+        '500':
           description: unexpected error
           schema:
             $ref: '#/definitions/error'
 
   '/media/{_id}':
-    x-swagger-router-controller: Default
+    x-swagger-router-controller: media
     get:
       description: get individual media item entry. will only return the latest version of this media id entry
       operationId: getEntry
+      tags: [media]
       parameters:
         - name: _id
           in: path
@@ -80,17 +108,18 @@ paths:
           description: returns the object in question
           schema:
             $ref: '#/definitions/entry'
-        default:
+        '500':
           description: unexpected error
           schema:
             $ref: '#/definitions/error'
 
 
   '/media/{_id}/links':
-    x-swagger-router-controller: Default
+    x-swagger-router-controller: media
     put:
       description: adds links to an existing media entry
       operationId: updateEntryLinks
+      tags: [media]
       parameters:
         - name: _id
           in: path
@@ -107,16 +136,17 @@ paths:
           description: returns the updated media entry
           schema:
             $ref: '#/definitions/entry'
-        default:
+        '500':
           description: unexpected error
           schema:
             $ref: '#/definitions/error'
 
   '/media/{_id}/reviews':
-    x-swagger-router-controller: Default
+    x-swagger-router-controller: media
     put:
       description: adds reviews to existing media entry
       operationId: updateEntryReviews
+      tags: [media]
       parameters:
         - name: _id
           in: path
@@ -133,7 +163,7 @@ paths:
           description: returns the object in question
           schema:
             $ref: '#/definitions/entry'
-        default:
+        '500':
           description: unexpected error
           schema:
             $ref: '#/definitions/error'
