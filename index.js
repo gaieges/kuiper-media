@@ -20,7 +20,7 @@ const swaggerDoc = jsyaml.safeLoad(fs.readFileSync('./api/swagger.yml', 'utf8'))
 
 
 const ipfs = new IPFS({
-  // repo: path
+  repo: process.env.IPFS_PATH || path.join( __dirname , 'ipfs-kuiper' ),
   init: true,
   start: true
 });
@@ -97,7 +97,6 @@ function endProcess(reason) {
   // eslint-disable-next-line no-console
   console.log("Quitting... Reason: %s", reason );
 
-  orbitdb.disconnect() 
   ipfs.stop( () => {
     process.exit()
   });
