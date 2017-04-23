@@ -68,7 +68,7 @@ In its current form, you can spin up a local instance of the API in docker like:
 
 ```bash
 docker build -t kuiper .
-docker run -it -p 3000:3000 -p 4001:4001 kuiper
+docker run -it -p 3000:3000 -p 4002:4002 kuiper
 ```
 
 # Using
