@@ -108,6 +108,8 @@ paths:
           description: returns the object in question
           schema:
             $ref: '#/definitions/entry'
+        '404':
+          description: no item found by that id
         '500':
           description: unexpected error
           schema:

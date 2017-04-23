@@ -47,9 +47,12 @@ module.exports.getEntry = function getEntry (req, res, next) {
    **/
 
   const id = req.swagger.params._id.value;
-  console.log('Getting entry id: %s', id );
+  const entry = req.docstore.get( id );
 
-  res.json( req.docstore.get(id) );
+  if( entry.length )
+    res.json( entry );
+  else
+    res.status(404).send();
 };
 
 
