@@ -12,13 +12,10 @@ module.exports.addEntry = function addEntry (req, res, next) {
    * returns entry
    **/
 
-   req.docstore.put( req.body ).then((hash) => {
+   req.docstore.put( req.body ).then( (hash) => {
      res.json(hash);
    })
-   .catch((err) => {
-     console.log("caught error")
-     next(err);
-   });
+   .catch(next);
 };
 
 

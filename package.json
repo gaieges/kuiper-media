@@ -20,12 +20,14 @@
   "homepage": "https://github.com/gaieges/kuiper-media#readme",
   "dependencies": {
     "async": "^2.3.0",
+    "body-parser": "^1.17.1",
     "compression": "^1.6.2",
     "errorhandler": "^1.5.0",
-    "express": "^3.2.0",
-    "ipfs": "^0.23.1",
+    "express": "^4.15.0",
+    "ipfs-api": "^14.0.0",
     "js-yaml": "^3.3.0",
     "lodash": "^4.17.4",
+    "morgan": "^1.8.1",
     "orbit-db": "^0.17.3",
     "orbit-db-docstore": "^0.2.0",
     "swagger-tools": "0.10.1"

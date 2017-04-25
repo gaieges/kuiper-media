@@ -12,7 +12,6 @@ RUN cd / && npm install
 ADD . /app
 WORKDIR /app
 
-EXPOSE 4002
 EXPOSE 3000
 
 ENV IPFS_PATH /ipfs

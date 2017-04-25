@@ -5,7 +5,7 @@ const app          = express();
 const swaggerTools = require('swagger-tools');
 const jsyaml       = require('js-yaml');
 const fs           = require('fs');
-const IPFS         = require('ipfs')
+const ipfsAPI      = require('ipfs-api')
 const OrbitDB      = require('orbit-db')
 const bodyParser   = require('body-parser')
 const compression  = require('compression');
@@ -18,76 +18,68 @@ const swaggerDoc = jsyaml.safeLoad(fs.readFileSync('./api/swagger.yml', 'utf8'))
 
 
 
-
-const ipfs = new IPFS({
-  repo: process.env.IPFS_PATH || path.join( __dirname , 'ipfs-kuiper' ),
-  init: true,
-  start: true
-});
+// connect to ipfs daemon API server
+var ipfs = ipfsAPI(
+  process.env.IPFS_HOST || 'localhost', 
+  process.env.IPFS_PORT || '5001'
+) 
 
 const orbitdb = new OrbitDB( ipfs );
 
-ipfs.on('ready', (e) => {
-  const docstore = orbitdb.docstore( 'kuiper-media' );
+const docstore = orbitdb.docstore( 'kuiper-media' );
 
-  docstore.events.on('write',(dbname, hash, entry) => {
-    console.log('writing: %s', JSON.stringify(entry));
-  })
+docstore.events.on('write',(dbname, hash, entry) => {
+  console.log('writing: %s', JSON.stringify(entry));
+})
 
-  app.use(function(req, res, next) {
-    req.orbitdb = orbitdb;
-    req.docstore = docstore
-    req.ipfs = ipfs;
+app.use(function(req, res, next) {
+  req.orbitdb = orbitdb;
+  req.docstore = docstore
+  req.ipfs = ipfs;
 
-    next();
-  });
+  next();
+});
 
-  // gzip/deflate outgoing responses
-  app.use(compression());
+// gzip/deflate outgoing responses
+app.use(compression());
 
-  // parse urlencoded request bodies into req.body
-  app.use(bodyParser.json());
+// parse urlencoded request bodies into req.body
+app.use(bodyParser.json());
 
-  // console logger
-  app.use(morgan('tiny'));
+// console logger
+app.use(morgan('tiny'));
 
-  // Error handler
-  app.use( (err, req, res, next) => {
-    console.error( err.stack );
-    res.status(500).json(err);
-  });
-
-
-
-  // Initialize the Swagger middleware
-  swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
-    // Interpret Swagger resources and attach metadata to request - must be first in swagger-tools middleware chain
-    app.use(middleware.swaggerMetadata());
-
-    // Validate Swagger requests
-    app.use(middleware.swaggerValidator());
-
-    // Route validated requests to appropriate controller
-    app.use(middleware.swaggerRouter({
-      swaggerUi: '/swagger.json',
-      controllers: './controllers',
-      useStubs: false
-    }));
-
-    // Serve the Swagger documents and Swagger UI
-    app.use(middleware.swaggerUi());
-
-    // Start the server
-    app.listen(serverPort, function () {
-      console.log('server is listening on port %d (http://localhost:%d)', serverPort, serverPort);
-      console.log('documentation is available on http://localhost:%d/docs', serverPort);
-    });
-  });
+// Error handler
+app.use( (err, req, res, next) => {
+  console.error( err.stack );
+  res.status(500).json(err);
 });
 
 
-ipfs.on('error', (e) => {
-  endProcess( Error(e) );
+
+// Initialize the Swagger middleware
+swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
+  // Interpret Swagger resources and attach metadata to request - must be first in swagger-tools middleware chain
+  app.use(middleware.swaggerMetadata());
+
+  // Validate Swagger requests
+  app.use(middleware.swaggerValidator());
+
+  // Route validated requests to appropriate controller
+  app.use(middleware.swaggerRouter({
+    swaggerUi: '/swagger.json',
+    controllers: './controllers',
+    useStubs: false
+  }));
+
+  // Serve the Swagger documents and Swagger UI
+  app.use(middleware.swaggerUi());
+
+  // Start the server
+  app.listen(serverPort, function () {
+    console.log('server is listening on port %d (http://localhost:%d)', serverPort, serverPort);
+    console.log('documentation is available on http://localhost:%d/docs', serverPort);
+  });
 });
 
 
@@ -96,10 +88,7 @@ ipfs.on('error', (e) => {
 function endProcess(reason) {
   // eslint-disable-next-line no-console
   console.log("Quitting... Reason: %s", reason );
-
-  ipfs.stop( () => {
-    process.exit()
-  });
+  process.exit()
 }
 
 

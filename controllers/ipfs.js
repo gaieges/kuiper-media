@@ -11,10 +11,6 @@ module.exports.getInfo = function( req, res, next ) {
    * returns ipfsMeta
    **/
 
-  var response = {
-    isOnline: req.ipfs.isOnline()
-  };
-
   async.parallel([
     req.ipfs.version,
     req.ipfs.id,
@@ -23,11 +19,11 @@ module.exports.getInfo = function( req, res, next ) {
     if(err)
       return next(err);
 
-    res.json( _.merge( response, {
+    res.json({
       version: results[0],
       nodeId: results[1],
-      peers: _.map(results[2], (e)=> _.get(e, 'peer.id').toB58String())
-    }));
+      peers: _.map( results[2], (e)=> e.addr.toString() )
+    });
   })
   
 
