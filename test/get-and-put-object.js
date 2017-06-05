@@ -19,9 +19,9 @@ var meh = ipfs.on('ready', () => {
 
     ipfs.object.get(hash,(gotErr, gotNode) => {
       if( gotErr )
-        return console.error(gotErr)
+        return console.error(`cant get: ${gotErr}`)
 
-      console.log( "successfully got: %s", gotNode.toJSON() ); 
+      console.log( `successfully got: ${gotNode}` ); 
     })
   })
 
